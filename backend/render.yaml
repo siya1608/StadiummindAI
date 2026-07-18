@@ -1,0 +1,25 @@
+# ============================================================
+# render.yaml — Render Deployment Configuration
+# Docs: https://render.com/docs/render-yaml-spec
+# ============================================================
+services:
+  - type: web
+    name: stadiumind-ai-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    region: oregon
+    plan: starter          # Upgrade to standard for persistent disk (ChromaDB)
+    healthCheckPath: /health
+
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false        # Set this manually in the Render dashboard — never hardcode
+
+      - key: HOST
+        value: 0.0.0.0
+
+      - key: CORS_ORIGINS
+        value: "*"         # Replace with your Vercel URL after first deploy e.g. https://stadium-mind.vercel.app
+
+    autoDeploy: true       # Auto re-deploy on every git push to main branch

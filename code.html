@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StadiumMind AI – FIFA World Cup 2026 Smart Stadium Hub</title>
+<meta name="description" content="StadiumMind AI — Real-time FIFA World Cup 2026 stadium intelligence platform. AI-powered crowd management, navigation, multilingual support, and operations command center for MetLife Stadium."/>
+<meta name="theme-color" content="#1a1f2e"/>
+<!-- 
+  DEPLOYMENT: Replace BACKEND_URL_PLACEHOLDER with your Render backend URL.
+  Example: https://stadiumind-ai-backend.onrender.com
+  Leave as-is for local development (falls back to http://127.0.0.1:8000).
+-->
+<meta name="backend-url" content="BACKEND_URL_PLACEHOLDER"/>
+
+<link href="/dist/output.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800;900&amp;family=Inter:wght@300;400;500;600&amp;family=Geist:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #0b0f10;
+            color: #e0e3e5;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 15px rgba(0, 82, 204, 0.4);
+        }
+        .neon-glow-secondary {
+            box-shadow: 0 0 15px rgba(0, 228, 117, 0.3);
+        }
+        .scanning-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #0052cc, transparent);
+            animation: scan 3s linear infinite;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            z-index: 10;
+        }
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(400px); }
+        }
+        .pulse-live {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .3; }
+        }
+        .marquee {
+            white-space: nowrap;
+            overflow: hidden;
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0f10; }
+        ::-webkit-scrollbar-thumb { background: #323537; border-radius: 10px; }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter py-4 bg-surface/5 backdrop-blur-md border-b border-white/10 shadow-[0_0_15px_rgba(0,82,204,0.3)]">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-black text-primary uppercase tracking-tighter">FIFA World Cup 2026</span>
+<div class="hidden md:flex gap-6 ml-8">
+<a id="topnav-live" class="text-primary font-bold border-b-2 border-primary hover:bg-white/10 transition-colors px-2" href="#">Stadium Live</a>
+<a id="topnav-logistics" class="text-on-surface-variant font-medium hover:bg-white/10 transition-colors px-2" href="#">Logistics</a>
+<a id="topnav-broadcasting" class="text-on-surface-variant font-medium hover:bg-white/10 transition-colors px-2" href="#">Broadcasting</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center gap-3 bg-white/5 rounded-full px-4 py-1.5 border border-white/10">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">language</span>
+<span class="text-label-caps font-label-caps">Language: EN</span>
+<span class="material-symbols-outlined text-xs">expand_more</span>
+</div>
+<div class="flex items-center gap-3 text-primary font-bold px-4 py-1.5 bg-primary/10 rounded-lg">
+<span class="w-2 h-2 rounded-full bg-error pulse-live"></span>
+<span class="text-label-caps font-label-caps">Live Score: USA 2 - 1 MEX</span>
+</div>
+<div class="w-10 h-10 rounded-full border border-primary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A cinematic, high-definition portrait of a professional stadium operations officer in a dark, tech-focused environment. The lighting is dominated by cool blue and cyan reflections from surrounding monitor screens, creating a futuristic, command-center aesthetic. The individual wears a clean, tactical-style official uniform with subtle metallic accents. The overall atmosphere is focused and authoritative, consistent with high-stakes sports management." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFIXhJe9h3or8fSJuCp8kLCzLBBTUItlQHtgS4896wXW1QFn-SWHXYKg9AYZS99R5GUJvu89yYum_jW-oo9xB-5Qe3Af7Kfu86CMe_zLPD4WxuXLaswyNIMdn5xkAot9wqDcfwSUwwIxl_8UF1TjotucGuAwxNGyYMoLtUZhgl5cRDHCDPl_EjQOgiuZ7q8eX8ZkKEnYONqVfQaqLyn1NvX2jY17nn7AA0d3PFPt7sHnH_YDb_LI-5"/>
+</div>
+</div>
+</header>
+<!-- Side Navigation -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest/20 backdrop-blur-xl border-r border-white/10 shadow-2xl flex flex-col z-40 pt-24">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-primary text-3xl">stadium</span>
+<div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary leading-tight">Stadium Control</h2>
+<p class="text-body-sm text-on-surface-variant">MetLife Stadium</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1 px-2">
+<a class="bg-primary/20 text-primary border-r-4 border-primary px-4 py-3 flex items-center gap-3 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-body-md text-body-md">Home</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-white/5 hover:text-primary transition-all duration-300" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-body-md text-body-md">Stadium Map</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-white/5 hover:text-primary transition-all duration-300" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-body-md text-body-md">Crowd Analytics</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-white/5 hover:text-primary transition-all duration-300" href="#">
+<span class="material-symbols-outlined">security</span>
+<span class="font-body-md text-body-md">Security</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-white/5 hover:text-primary transition-all duration-300" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+<div class="p-4">
+<button id="sidebar-ai-btn" class="w-full bg-primary-container text-white py-3 rounded-xl flex items-center justify-center gap-2 font-bold neon-glow-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined">smart_toy</span>
+                AI ASSISTANT
+            </button>
+</div>
+<div class="mt-auto px-2 pb-6 flex flex-col gap-1">
+<a class="text-on-surface-variant px-4 py-2 flex items-center gap-3 hover:text-primary" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="text-body-sm font-body-sm">Help</span>
+</a>
+<a class="text-on-surface-variant px-4 py-2 flex items-center gap-3 hover:text-error" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-body-sm font-body-sm">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 pt-24 min-h-screen pb-16 px-gutter">
+<!-- Hero Section: Broadcast Style -->
+<section class="relative h-[400px] rounded-3xl overflow-hidden mb-8 shadow-2xl group border border-white/10">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="A sprawling, high-resolution view of a packed football stadium during a night match. The stadium is illuminated by massive floodlights, casting a brilliant white and blue glow onto the emerald-green pitch. 82,000 spectators are visible as a vibrant mosaic of colors in the stands. The atmosphere is electric and cinematic, captured with a wide-angle lens, featuring sharp architectural lines and modern structural details of a World Cup caliber arena." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD-qHMwp_7DbnCGQddIyka9rUPCnM1KyEcLS8DpycM9_V5Kj0zsdahslhyoYxPecNLhwGjhdsuPxmD4tWLcDco05PtG6rGJPkHz8KM0u06OaNcV8GtzWJM60RPH1gtLYv_Zc3qWOuByy79tvyvV_d1ohZ_jK3OfgXyM_WxiY0-IoJY1OS-QlkS15K5bN_NEO4OVzfXFUDYCa1RQCx4IVDmRtAw9uMVPSQv0WiZ8hzb8W1CkdO2PO3ln')">
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
+<!-- Hero HUD Overlay -->
+<div class="absolute top-6 left-6 flex items-start gap-4">
+<div class="glass-panel px-6 py-4 rounded-2xl flex flex-col items-center">
+<span class="text-label-caps font-label-caps text-secondary uppercase tracking-widest mb-1">Live Match</span>
+<h1 class="font-headline-xl text-headline-xl text-white tracking-tighter">USA VS MEXICO</h1>
+<div class="flex items-center gap-4 mt-2">
+<div class="flex flex-col items-center">
+<span class="font-headline-lg text-headline-lg text-white">2</span>
+<span class="text-label-caps text-primary">USA</span>
+</div>
+<div class="w-[1px] h-8 bg-white/20"></div>
+<div class="flex flex-col items-center">
+<span class="font-headline-lg text-headline-lg text-white">1</span>
+<span class="text-label-caps text-primary">MEX</span>
+</div>
+</div>
+</div>
+<div class="glass-panel px-4 py-2 rounded-xl flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-error pulse-live"></div>
+<span class="font-data-mono text-data-mono text-white">45:00</span>
+</div>
+</div>
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+<div class="flex gap-4">
+<div class="glass-panel px-4 py-3 rounded-xl min-w-[120px]">
+<p class="text-label-caps text-on-surface-variant">Capacity</p>
+<p class="font-data-mono text-white">82,500</p>
+</div>
+<div class="glass-panel px-4 py-3 rounded-xl min-w-[120px]">
+<p class="text-label-caps text-on-surface-variant">Weather</p>
+<p class="font-data-mono text-white">24°C Clear</p>
+</div>
+<div class="glass-panel px-4 py-3 rounded-xl min-w-[120px]">
+<p class="text-label-caps text-on-surface-variant">Status</p>
+<p class="font-data-mono text-secondary-fixed">LIVE HUD</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<span class="text-label-caps text-on-surface-variant">Primary Camera: West Wing A1</span>
+<div class="w-64 h-24 glass-panel rounded-xl overflow-hidden relative border border-secondary/30">
+<div class="scanning-line"></div>
+<img class="w-full h-full object-cover grayscale brightness-50" data-alt="A grainy, high-contrast security camera feed from a high vantage point inside a sports stadium. The shot shows crowds moving through wide concourses, filtered with a digital blue cyan overlay and scanlines. Motion blur suggests movement, while the framing is tight on a specific entrance gate, evoking a tactical monitoring perspective." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_zkWJOFLm7-Bbv1XbZl3LTcyUU5Ux11uEqZdYlb7w-oNziJ89tfCFm-s9nKNLhqqIAaomXn7yRiZOixP2d4_1s5v9jF6OAXGtB6J5we2gdzDrFOrn2lKiG6JCB5m68jnmDMFpx81_m1ESWhx1VsuX_zCFPrnqe52jKEW5RNO4Hr1gc923wfLqIsNqSQQz5rlJxNEOUkdojrLAlhGVh_mu4wJtMy4QdEbJoPRFf5BEFoH8G15-Uciw"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary opacity-50">videocam</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Left Column: Dashboard & Analytics -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
+<!-- Live Crowd Dashboard -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-card-gap">
+<!-- Gate A -->
+<div class="glass-panel p-5 rounded-2xl relative overflow-hidden group hover:border-primary transition-all">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-white">Gate A</h3>
+<p class="text-label-caps text-on-surface-variant">North Concourse</p>
+</div>
+<span class="text-secondary font-data-mono">72%</span>
+</div>
+<div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 72%"></div>
+</div>
+</div>
+<!-- Gate B - Heavy Traffic -->
+<div class="glass-panel p-5 rounded-2xl relative border-error/50 bg-error/5 animate-pulse">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-white">Gate B</h3>
+<p class="text-label-caps text-error">HEAVY TRAFFIC</p>
+</div>
+<span class="text-error font-data-mono">94%</span>
+</div>
+<div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+<div class="bg-error h-full" style="width: 94%"></div>
+</div>
+</div>
+<!-- Food Court -->
+<div class="glass-panel p-5 rounded-2xl hover:border-primary transition-all">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-white">Food Court</h3>
+<p class="text-label-caps text-on-surface-variant">Level 2 South</p>
+</div>
+<span class="text-secondary font-data-mono">45%</span>
+</div>
+<div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary-container h-full" style="width: 45%"></div>
+</div>
+</div>
+<!-- Parking -->
+<div class="glass-panel p-5 rounded-2xl hover:border-primary transition-all">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-white">Parking</h3>
+<p class="text-label-caps text-on-surface-variant">Main Lot</p>
+</div>
+<span class="text-warning font-data-mono">88%</span>
+</div>
+<div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full" style="width: 88%"></div>
+</div>
+</div>
+<!-- Medical -->
+<div class="glass-panel p-5 rounded-2xl hover:border-primary transition-all">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-white">Medical</h3>
+<p class="text-label-caps text-on-surface-variant">Zone 4 Station</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-secondary font-data-mono">2 min</span>
+<span class="text-xs text-on-surface-variant">Wait Time</span>
+</div>
+</div>
+<div class="flex gap-1">
+<div class="h-1 flex-1 rounded-full bg-secondary"></div>
+<div class="h-1 flex-1 rounded-full bg-white/10"></div>
+<div class="h-1 flex-1 rounded-full bg-white/10"></div>
+</div>
+</div>
+<!-- Washroom -->
+<div class="glass-panel p-5 rounded-2xl hover:border-primary transition-all">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-white">Washroom</h3>
+<p class="text-label-caps text-on-surface-variant">Universal</p>
+</div>
+<span class="text-secondary font-body-sm">Normal</span>
+</div>
+<div class="flex gap-1 items-center">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">wc</span>
+<span class="text-xs text-on-surface-variant">Available Capacity</span>
+</div>
+</div>
+</div>
+
+            <!-- AI Smart Mitigation Recommendations -->
+            <div class="glass-panel p-6 rounded-3xl col-span-12 my-6" id="ai-recommendations-panel">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-xl animate-pulse">psychology</span>
+                        <h2 class="font-headline-lg text-headline-lg text-white">AI Operations & Crowd Mitigation Recommendations</h2>
+                    </div>
+                    <span class="text-xs bg-primary/20 text-primary px-3 py-1 rounded-full font-data-mono animate-pulse">Real-time Analysis Active</span>
+                </div>
+                <div id="ai-recs-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Dynamic recommendation cards will load here -->
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col justify-between animate-pulse">
+                        <div class="h-4 bg-white/10 rounded w-2/3 mb-4"></div>
+                        <div class="h-3 bg-white/10 rounded w-full mb-2"></div>
+                        <div class="h-3 bg-white/10 rounded w-5/6 mb-4"></div>
+                        <div class="h-8 bg-white/10 rounded w-1/3"></div>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col justify-between animate-pulse">
+                        <div class="h-4 bg-white/10 rounded w-2/3 mb-4"></div>
+                        <div class="h-3 bg-white/10 rounded w-full mb-2"></div>
+                        <div class="h-3 bg-white/10 rounded w-5/6 mb-4"></div>
+                        <div class="h-8 bg-white/10 rounded w-1/3"></div>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col justify-between animate-pulse">
+                        <div class="h-4 bg-white/10 rounded w-2/3 mb-4"></div>
+                        <div class="h-3 bg-white/10 rounded w-full mb-2"></div>
+                        <div class="h-3 bg-white/10 rounded w-5/6 mb-4"></div>
+                        <div class="h-8 bg-white/10 rounded w-1/3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Organizer Analytics -->
+<div class="glass-panel p-6 rounded-3xl">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-lg text-headline-lg text-white">Advanced Analytics</h2>
+<div class="flex gap-2">
+<button class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-label-caps transition-colors">Export CSV</button>
+<button class="bg-primary/20 text-primary px-4 py-2 rounded-lg text-label-caps transition-colors">Real-time Feed</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Crowd Density Heatmap -->
+<div class="bg-black/20 rounded-2xl p-4 border border-white/5">
+<div class="flex justify-between mb-2">
+<span class="text-label-caps text-on-surface-variant">Crowd Density Heatmap</span>
+<span class="material-symbols-outlined text-sm">filter_center_focus</span>
+</div>
+<div class="h-48 relative rounded-xl overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A vibrant digital heatmap overlay representing crowd density within a stadium blueprint. High-density areas are shown in intense glowing red and orange, while sparse areas are cool blue and green. The graphic is clean, professional, and minimalist, using thin lines and a dark background consistent with a high-end data dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCubWFGYkwBfto-k-t-22u-kHxcuPn5eZXlTSBVCnuXOAPiBJfADvta5NYT1P3w5wbY-_h1yL_4Yu3O-hv5Rqg2kfbbzBcsNORJQ8NNohm0vfkQDuCf4ucoEr1z6fqaz5rQ42Pkxertsf1cxZSNQnS_aJ6BFiLz1LkctbhpU6JAfbqEOrDofiXMqUWCuP5iLlaJ3TI_NK5AY-8nH9AY5DxmUis7aP7oN7FV2DiPGDQORPnEKdk_DXW5"/>
+</div>
+</div>
+<!-- Entry Rate Chart -->
+<div class="bg-black/20 rounded-2xl p-4 border border-white/5">
+<div class="flex justify-between mb-2">
+<span class="text-label-caps text-on-surface-variant">Entry Rate (P/Sec)</span>
+<span class="material-symbols-outlined text-sm">show_chart</span>
+</div>
+<div class="h-48 flex items-end gap-1 px-2">
+<div class="bg-primary/40 w-full h-[60%] rounded-t-sm"></div>
+<div class="bg-primary/60 w-full h-[80%] rounded-t-sm"></div>
+<div class="bg-primary w-full h-[95%] rounded-t-sm"></div>
+<div class="bg-primary/70 w-full h-[40%] rounded-t-sm"></div>
+<div class="bg-primary/30 w-full h-[20%] rounded-t-sm"></div>
+<div class="bg-primary/50 w-full h-[55%] rounded-t-sm"></div>
+<div class="bg-primary w-full h-[90%] rounded-t-sm"></div>
+<div class="bg-primary/80 w-full h-[70%] rounded-t-sm"></div>
+</div>
+</div>
+<!-- Emergency Alerts -->
+<div class="bg-black/20 rounded-2xl p-4 border border-white/5 col-span-1 md:col-span-2">
+<h3 class="text-label-caps text-on-surface-variant mb-4">Security Incidents</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 bg-error/10 border border-error/20 rounded-xl">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-error">warning</span>
+<div>
+<p class="text-body-md text-white font-bold">Unattended Bag - Section 202</p>
+<p class="text-xs text-on-surface-variant">Response Unit 04 dispatched</p>
+</div>
+</div>
+<span class="text-xs text-on-surface-variant">1m ago</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-xl">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">info</span>
+<div>
+<p class="text-body-md text-white">Elevator Maintenance - North Stand</p>
+<p class="text-xs text-on-surface-variant">Scheduled check complete</p>
+</div>
+</div>
+<span class="text-xs text-on-surface-variant">15m ago</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: AI Assistant & Quick Actions -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<!-- Quick Actions Grid -->
+<div class="glass-panel p-6 rounded-3xl">
+<h2 class="text-label-caps text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">bolt</span>
+                        Quick Operations
+                    </h2>
+<div class="grid grid-cols-2 gap-3">
+<button class="bg-white/5 hover:bg-primary/20 hover:text-primary p-4 rounded-2xl flex flex-col items-center gap-2 border border-white/10 transition-all text-center">
+<span class="material-symbols-outlined">airline_seat_recline_extra</span>
+<span class="text-xs">Find My Seat</span>
+</button>
+<button class="bg-white/5 hover:bg-primary/20 hover:text-primary p-4 rounded-2xl flex flex-col items-center gap-2 border border-white/10 transition-all text-center">
+<span class="material-symbols-outlined">restaurant</span>
+<span class="text-xs">Food Recs</span>
+</button>
+<button class="bg-white/5 hover:bg-primary/20 hover:text-primary p-4 rounded-2xl flex flex-col items-center gap-2 border border-white/10 transition-all text-center">
+<span class="material-symbols-outlined">wc</span>
+<span class="text-xs">Washroom</span>
+</button>
+<button class="bg-error/10 text-error border border-error/30 p-4 rounded-2xl flex flex-col items-center gap-2 hover:bg-error hover:text-white transition-all text-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">emergency</span>
+<span class="text-xs">Emergency</span>
+</button>
+<button class="bg-white/5 hover:bg-primary/20 hover:text-primary p-4 rounded-2xl flex flex-col items-center gap-2 border border-white/10 transition-all text-center">
+<span class="material-symbols-outlined">accessible</span>
+<span class="text-xs">Accessibility</span>
+</button>
+<button class="bg-white/5 hover:bg-primary/20 hover:text-primary p-4 rounded-2xl flex flex-col items-center gap-2 border border-white/10 transition-all text-center">
+<span class="material-symbols-outlined">directions_bus</span>
+<span class="text-xs">Transport</span>
+</button>
+<button class="col-span-2 bg-primary text-on-primary font-bold p-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">description</span>
+                            Generate AI Report
+                        </button>
+</div>
+</div>
+<!-- AI Assistant Panel -->
+<div class="glass-panel flex-1 rounded-3xl flex flex-col overflow-hidden min-h-[450px]">
+<div class="p-4 border-b border-white/10 flex items-center justify-between bg-primary/5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-sm text-white">smart_toy</span>
+</div>
+<div>
+<h3 class="font-bold text-white leading-none">StadiumMind AI</h3>
+<span class="text-[10px] text-secondary uppercase tracking-widest">Multilingual · Always Active</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+  <div id="lang-badge" class="hidden items-center gap-1.5 bg-primary/20 border border-primary/30 px-2.5 py-1 rounded-full transition-all duration-500">
+    <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+    <span id="lang-badge-text" class="text-[10px] font-bold text-primary uppercase tracking-wider">English</span>
+  </div>
+  <span id="chat-close-btn" class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-error transition-colors">close</span>
+</div>
+</div>
+<div class="flex-1 p-4 space-y-4 overflow-y-auto">
+<div class="flex gap-3">
+<div class="w-8 h-8 rounded-full bg-white/5 flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-xs">smart_toy</span>
+</div>
+<div class="bg-white/5 p-3 rounded-2xl rounded-tl-none border border-white/10 text-body-sm">
+                                Hello! I'm your Stadium Operations Assistant. How can I help optimize the event today?<br/>
+                                <span class="text-[10px] text-secondary mt-1 block">🌐 Try asking in Spanish, French, Arabic, or any language!</span>
+                            </div>
+</div>
+<div class="flex flex-wrap gap-2">
+<button data-chat-chip="Where is my seat?" class="text-xs bg-white/5 hover:bg-primary/20 border border-white/10 px-3 py-2 rounded-full transition-colors">Where is my seat?</button>
+<button data-chat-chip="Which gate is least crowded?" class="text-xs bg-white/5 hover:bg-primary/20 border border-white/10 px-3 py-2 rounded-full transition-colors">Which gate is least crowded?</button>
+<button data-chat-chip="Find wheelchair accessible route to my seat" class="text-xs bg-white/5 hover:bg-primary/20 border border-white/10 px-3 py-2 rounded-full transition-colors">Find wheelchair route</button>
+<button data-chat-chip="Generate operations report" class="text-xs bg-white/5 hover:bg-primary/20 border border-white/10 px-3 py-2 rounded-full transition-colors">Generate operations report</button>
+</div>
+<div class="flex flex-wrap gap-1.5 pt-1">
+<span class="text-[9px] text-on-surface-variant uppercase tracking-widest self-center pr-1">🌐 Try:</span>
+<button class="lang-chip text-xs bg-white/5 hover:bg-secondary/20 border border-white/10 hover:border-secondary/30 px-2.5 py-1.5 rounded-full transition-all duration-200" data-msg="¿Dónde está mi asiento en la Sección 224?">🇪🇸 Español</button>
+<button class="lang-chip text-xs bg-white/5 hover:bg-secondary/20 border border-white/10 hover:border-secondary/30 px-2.5 py-1.5 rounded-full transition-all duration-200" data-msg="Comment puis-je trouver ma place?">🇫🇷 Français</button>
+<button class="lang-chip text-xs bg-white/5 hover:bg-secondary/20 border border-white/10 hover:border-secondary/30 px-2.5 py-1.5 rounded-full transition-all duration-200" data-msg="Onde posso encontrar comida vegana?">🇧🇷 Português</button>
+<button class="lang-chip text-xs bg-white/5 hover:bg-secondary/20 border border-white/10 hover:border-secondary/30 px-2.5 py-1.5 rounded-full transition-all duration-200" data-msg="أين يمكنني إيجاد مقعدي؟">🇸🇦 العربية</button>
+</div>
+</div>
+<div class="p-4 bg-surface-container">
+<div class="relative">
+<input id="chat-input" class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 pr-12 text-sm focus:border-primary focus:ring-0 outline-none" placeholder="Ask in any language… اسأل بأي لغة… Pregunta en cualquier idioma…" type="text"/>
+<button id="chat-send-btn" class="absolute right-2 top-1/2 -translate-y-1/2 text-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Accessibility Hub -->
+<div class="glass-panel p-6 rounded-3xl">
+<h2 class="text-label-caps text-on-surface-variant mb-4">Accessibility Toggle</h2>
+<div class="space-y-3">
+<label class="flex items-center justify-between p-3 bg-white/5 rounded-xl cursor-pointer hover:bg-white/10 border border-white/10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">accessible</span>
+<span class="text-body-sm">Wheelchair Mode</span>
+</div>
+<input class="form-checkbox bg-transparent border-primary text-primary rounded focus:ring-0" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-3 bg-white/5 rounded-xl cursor-pointer hover:bg-white/10 border border-white/10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">visibility</span>
+<span class="text-body-sm">Low Vision Mode</span>
+</div>
+<input class="form-checkbox bg-transparent border-primary text-primary rounded focus:ring-0" type="checkbox"/>
+</label>
+<div class="flex gap-2 mt-4">
+<button class="flex-1 bg-white/5 py-2 rounded-lg text-xs hover:bg-white/10 border border-white/10 transition-colors">Voice Mode</button>
+<button class="flex-1 bg-white/5 py-2 rounded-lg text-xs hover:bg-white/10 border border-white/10 transition-colors">Large Text</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Marquee -->
+<footer class="fixed bottom-0 w-full z-50 bg-surface-container-low border-t border-white/10 py-2 overflow-hidden h-10">
+<div class="flex items-center gap-8 marquee">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary pulse-live"></span>
+<span class="text-label-caps font-label-caps text-secondary font-bold">MATCH FEED: 65' substitution for USA. Christian Pulisic out, Giovanni Reyna in.</span>
+</div>
+<div class="w-[1px] h-4 bg-white/20"></div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">directions_bus</span>
+<span class="text-label-caps font-label-caps text-white">TRANSPORT: MetLife Express shuttle arriving in 4 mins at Gate C.</span>
+</div>
+<div class="w-[1px] h-4 bg-white/20"></div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error text-sm">emergency</span>
+<span class="text-label-caps font-label-caps text-error font-bold">EMERGENCY CONTACT: Dial *911 for in-stadium security assist.</span>
+</div>
+<div class="w-[1px] h-4 bg-white/20"></div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm">cloud</span>
+<span class="text-label-caps font-label-caps text-white">WEATHER: 24°C, Humidity 45%, Wind NW at 12km/h.</span>
+</div>
+</div>
+</footer>
+<script>
+    // ── API Base URL Configuration ────────────────────────────────────────────
+    // For local development:    http://127.0.0.1:8000/api  (default)
+    // For Render deployment:    Set the <meta name="backend-url"> tag below,
+    //                           or use the BACKEND_URL env variable in Vercel.
+    // ─────────────────────────────────────────────────────────────────────────
+    const backendMeta = document.querySelector('meta[name="backend-url"]');
+    const API_BASE = (backendMeta && backendMeta.content && backendMeta.content !== 'BACKEND_URL_PLACEHOLDER')
+        ? backendMeta.content.replace(/\/$/, '') + '/api'
+        : 'http://127.0.0.1:8000/api';
+
+    let chatHistory = [];
+
+    // Helper: Simple Markdown to HTML parser
+    function parseMarkdown(md) {
+        if (!md) return "";
+        return md
+            .replace(/^### (.*$)/gim, '<h3 class="text-base font-bold text-secondary mt-4 mb-1">$1</h3>')
+            .replace(/^## (.*$)/gim, '<h2 class="text-lg font-black text-primary mt-6 mb-2 border-b border-white/5 pb-1">$1</h2>')
+            .replace(/^# (.*$)/gim, '<h1 class="text-xl font-black text-white mt-8 mb-4 border-b border-primary/20 pb-2 uppercase tracking-wide">$1</h1>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-bold">$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em class="text-on-surface-variant">$1</em>')
+            .replace(/`([^`]+)`/g, '<code class="bg-black/40 px-1.5 py-0.5 rounded font-mono text-xs text-secondary-fixed">$1</code>')
+            .replace(/\n/g, '<br/>');
+    }
+
+    // Button Micro-interactions
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            this.classList.add('scale-95');
+            setTimeout(() => this.classList.remove('scale-95'), 150);
+        });
+    });
+
+    // 1. Fetch & Update Match HUD
+    async function updateMatchHUD() {
+        try {
+            const res = await fetch(`${API_BASE}/match/hud`);
+            if (!res.ok) throw new Error('API failure');
+            const data = await res.json();
+
+            // Update top bar live score
+            const topScore = document.querySelector('header div.text-primary span.font-label-caps');
+            if (topScore) topScore.textContent = `Live Score: ${data.team_a} ${data.score.usa} - ${data.score.mex} ${data.team_b}`;
+
+            // Update hero score HUD
+            const heroTeams = document.querySelector('h1.font-headline-xl');
+            if (heroTeams) heroTeams.textContent = `${data.team_a} VS ${data.team_b}`;
+
+            const scores = document.querySelectorAll('.relative.h-\\[400px\\] span.font-headline-lg');
+            if (scores.length >= 2) {
+                scores[0].textContent = data.score.usa;
+                scores[1].textContent = data.score.mex;
+            }
+
+            // Update match elapsed timer
+            const matchTimer = document.querySelector('.relative.h-\\[400px\\] .font-data-mono');
+            if (matchTimer) matchTimer.textContent = data.elapsed_time;
+
+            // Update HUD metadata
+            const hudPanels = document.querySelectorAll('.relative.h-\\[400px\\] div.justify-between div.glass-panel p.font-data-mono');
+            if (hudPanels.length >= 3) {
+                hudPanels[0].textContent = data.capacity.toLocaleString();
+                hudPanels[1].textContent = data.weather;
+                hudPanels[2].textContent = data.status;
+            }
+
+            // Update camera details
+            const camLabel = document.querySelector('.relative.h-\\[400px\\] span.text-label-caps');
+            if (camLabel && data.primary_camera) {
+                camLabel.textContent = `Primary Camera: ${data.primary_camera.name}`;
+            }
+
+            // Update footer marquee items
+            const marquee = document.querySelector('footer .marquee');
+            if (marquee && data.marquee_alerts) {
+                marquee.innerHTML = data.marquee_alerts.map((alert, idx) => {
+                    let icon = "info";
+                    let colorClass = "text-white";
+                    if (alert.type === "MATCH") {
+                        icon = "sports_soccer";
+                        colorClass = "text-secondary font-bold";
+                    } else if (alert.type === "TRANSPORT") {
+                        icon = "directions_bus";
+                    } else if (alert.type === "EMERGENCY") {
+                        icon = "emergency";
+                        colorClass = "text-error font-bold";
+                    } else if (alert.type === "WEATHER") {
+                        icon = "cloud";
+                    }
+
+                    return `
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">${icon}</span>
+                            <span class="text-label-caps font-label-caps ${colorClass}">${alert.content}</span>
+                        </div>
+                    `;
+                }).join('<div class="w-[1px] h-4 bg-white/20 mx-4"></div>');
+            }
+
+        } catch (e) {
+            console.warn("Match HUD API down, using simulated local timer.");
+            // Fallback: local timer increment
+            const matchTimer = document.querySelector('.relative.h-\\[400px\\] .font-data-mono');
+            if (matchTimer && matchTimer.textContent.includes(':')) {
+                const parts = matchTimer.textContent.split(':');
+                let sec = parseInt(parts[1]) + 1;
+                let min = parseInt(parts[0]);
+                if (sec >= 60) { sec = 0; min += 1; }
+                matchTimer.textContent = `${min}:${sec < 10 ? '0' + sec : sec}`;
+            }
+        }
+    }
+
+    // 2. Fetch & Update Gate / Facilities Capacities
+    async function updateGatesCapacity() {
+        try {
+            const res = await fetch(`${API_BASE}/crowd/gates`);
+            if (!res.ok) throw new Error('API failure');
+            const data = await res.json();
+
+            // Find all cards
+            const cards = document.querySelectorAll('.col-span-12 .glass-panel');
+            data.gates.forEach(gate => {
+                cards.forEach(card => {
+                    const h3 = card.querySelector('h3');
+                    if (h3 && h3.textContent.trim().toLowerCase() === gate.name.toLowerCase()) {
+                        
+                        // Percentage text
+                        const percentageSpan = card.querySelector('.font-data-mono, .font-body-sm');
+                        if (percentageSpan) percentageSpan.textContent = gate.status_text;
+
+                        // Subtitle
+                        const subtitle = card.querySelector('.text-label-caps');
+                        if (subtitle) {
+                            subtitle.textContent = gate.location.toUpperCase();
+                            // Apply style text color
+                            if (gate.style === 'danger') {
+                                subtitle.className = 'text-label-caps text-error';
+                            } else {
+                                subtitle.className = 'text-label-caps text-on-surface-variant';
+                            }
+                        }
+
+                        // Progress Bar
+                        const progressBar = card.querySelector('.h-full');
+                        if (progressBar) {
+                            progressBar.style.width = `${gate.percentage}%`;
+                            if (gate.style === 'danger') {
+                                progressBar.className = 'bg-error h-full';
+                            } else if (gate.style === 'warning') {
+                                progressBar.className = 'bg-primary-container h-full';
+                            } else {
+                                progressBar.className = 'bg-secondary-container h-full';
+                            }
+                        }
+
+                        // Danger Container Styling
+                        if (gate.style === 'danger') {
+                            card.className = 'glass-panel p-5 rounded-2xl relative border-error/50 bg-error/5 animate-pulse';
+                        } else {
+                            card.className = 'glass-panel p-5 rounded-2xl relative overflow-hidden group hover:border-primary transition-all';
+                        }
+                    }
+                });
+            });
+
+        } catch (e) {
+            console.warn("Gates API down, using simulated local adjustments.");
+            // Fallback: local simulated fluctuations
+            const metrics = document.querySelectorAll('.col-span-12 .glass-panel');
+            metrics.forEach(card => {
+                const metricVal = card.querySelector('.font-data-mono');
+                if (metricVal && metricVal.textContent.includes('%')) {
+                    const currentVal = parseInt(metricVal.textContent);
+                    const variation = Math.floor(Math.random() * 3) - 1;
+                    const newVal = Math.min(Math.max(currentVal + variation, 0), 100);
+                    metricVal.textContent = newVal + '%';
+                    const bar = card.querySelector('.h-full');
+                    if (bar) bar.style.width = newVal + '%';
+                }
+            });
+        }
+    }
+
+    // 3. Fetch & Render Dynamic Entry Rate Chart
+    async function updateEntryRateChart() {
+        try {
+            const res = await fetch(`${API_BASE}/crowd/entry-rates`);
+            if (!res.ok) throw new Error();
+            const rates = await res.json();
+
+            const entryRateHeader = Array.from(document.querySelectorAll('span')).find(s => s.textContent.includes("Entry Rate"));
+            if (entryRateHeader) {
+                const chart = entryRateHeader.parentElement.nextElementSibling;
+                if (chart) {
+                    chart.innerHTML = rates.map((rate, idx) => {
+                        // alternate opacity for styles
+                        let opacityClass = "bg-primary";
+                        if (rate < 40) opacityClass = "bg-primary/30";
+                        else if (rate < 60) opacityClass = "bg-primary/50";
+                        else if (rate < 80) opacityClass = "bg-primary/70";
+                        
+                        return `<div class="${opacityClass} w-full rounded-t-sm transition-all duration-500" style="height: ${rate}%" title="${rate} P/Sec"></div>`;
+                    }).join('');
+                }
+            }
+        } catch (e) {
+            // Keep default bars
+        }
+    }
+
+    // 4. Fetch Security Incidents
+    async function fetchIncidents() {
+        try {
+            const res = await fetch(`${API_BASE}/analytics/incidents`);
+            if (!res.ok) throw new Error();
+            const incidents = await res.json();
+
+            const incidentHeader = Array.from(document.querySelectorAll('h3')).find(h3 => h3.textContent.includes('Security Incidents'));
+            if (incidentHeader && incidentHeader.nextElementSibling) {
+                const container = incidentHeader.nextElementSibling;
+                container.innerHTML = incidents.map(inc => {
+                    const isError = inc.level === 'error';
+                    const bgClass = isError ? 'bg-error/10 border-error/20' : 'bg-white/5 border-white/10';
+                    const icon = isError ? 'warning' : 'info';
+                    const iconColor = isError ? 'text-error' : 'text-primary';
+
+                    return `
+                        <div class="flex items-center justify-between p-3 border rounded-xl ${bgClass}">
+                            <div class="flex items-center gap-4">
+                                <span class="material-symbols-outlined ${iconColor}">${icon}</span>
+                                <div>
+                                    <p class="text-body-md text-white font-bold">${inc.title}</p>
+                                    <p class="text-xs text-on-surface-variant">${inc.description}</p>
+                                </div>
+                            </div>
+                            <span class="text-xs text-on-surface-variant">${inc.timestamp}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } catch (e) {
+            // keep default
+        }
+    }
+
+    // 5. AI Assistant Panel Logic — use stable IDs
+    const chatContainer = document.querySelector('.glass-panel.flex-1 div.space-y-4');
+    const chatInput = document.getElementById('chat-input');
+    const chatSendBtn = document.getElementById('chat-send-btn');
+
+    function scrollToChat() {
+        if (chatInput) {
+            chatInput.focus();
+            chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function appendThinking() {
+        if (!chatContainer) return null;
+        const thinkingId = "think_" + Date.now();
+        const msgDiv = document.createElement('div');
+        msgDiv.className = "flex gap-3 id-loader";
+        msgDiv.id = thinkingId;
+        msgDiv.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-primary-container flex-shrink-0 flex items-center justify-center"><span class="material-symbols-outlined text-xs text-white animate-spin">autorenew</span></div>
+            <div class="bg-white/5 p-3 rounded-2xl rounded-tl-none border border-white/10 text-body-sm text-on-surface-variant italic">
+                StadiumMind AI is processing...
+            </div>
+        `;
+        chatContainer.appendChild(msgDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        return thinkingId;
+    }
+
+    function removeThinking(id) {
+        if (!id) return;
+        const loader = document.getElementById(id);
+        if (loader) loader.remove();
+    }
+
+    function appendMessage(role, content, sources = []) {
+        if (!chatContainer) return;
+        
+        const isAI = role === 'assistant';
+        const msgDiv = document.createElement('div');
+        msgDiv.className = "flex gap-3";
+        
+        const avatar = isAI 
+            ? `<div class="w-8 h-8 rounded-full bg-primary-container flex-shrink-0 flex items-center justify-center"><span class="material-symbols-outlined text-xs text-white">smart_toy</span></div>`
+            : `<div class="w-8 h-8 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center"><span class="material-symbols-outlined text-xs">person</span></div>`;
+
+        const contentParsed = isAI ? parseMarkdown(content) : content;
+        
+        let sourcesHtml = "";
+        if (sources.length > 0) {
+            sourcesHtml = `
+                <div class="mt-2 pt-1.5 border-t border-white/5 text-[10px] text-secondary flex flex-wrap gap-1 items-center">
+                    <span class="material-symbols-outlined text-[10px]">menu_book</span> Retrieved contexts: 
+                    ${sources.map(src => `<span class="bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">${src}</span>`).join('')}
+                </div>
+            `;
+        }
+
+        msgDiv.innerHTML = `
+            ${avatar}
+            <div class="${isAI ? 'bg-white/5 border border-white/10' : 'bg-primary/20 border border-primary/10'} p-3 rounded-2xl ${isAI ? 'rounded-tl-none' : 'rounded-tr-none'} text-body-sm max-w-[85%]">
+                <div>${contentParsed}</div>
+                ${sourcesHtml}
+            </div>
+        `;
+        
+        chatContainer.appendChild(msgDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    async function handleChatMessage(msgText) {
+        if (!msgText.trim()) return;
+        
+        // Append user msg
+        appendMessage('user', msgText);
+        chatHistory.push({ role: 'user', content: msgText });
+        
+        // Clear input
+        if (chatInput) chatInput.value = "";
+
+        // Append loader
+        const thinkingId = appendThinking();
+
+        try {
+            const res = await fetch(`${API_BASE}/assistant/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msgText, history: chatHistory.slice(-6) }) // send last 3 exchanges
+            });
+
+            // Remove loader
+            removeThinking(thinkingId);
+
+            if (!res.ok) throw new Error('API Connection Failed');
+            const data = await res.json();
+            
+            appendMessage('assistant', data.response, data.sources);
+            chatHistory.push({ role: 'assistant', content: data.response });
+
+            // --- Language Badge Update ---
+            const langBadge = document.getElementById('lang-badge');
+            const langText = document.getElementById('lang-badge-text');
+            if (langBadge && langText && data.detected_language) {
+                langText.textContent = data.detected_language;
+                langBadge.classList.remove('hidden');
+                langBadge.classList.add('flex');
+                // Briefly pulse the badge to signal language was detected
+                langBadge.style.transform = 'scale(1.1)';
+                setTimeout(() => { langBadge.style.transform = 'scale(1)'; }, 300);
+                // Fade out badge after 8 seconds if back to English
+                if (data.detected_language.toLowerCase() === 'english') {
+                    setTimeout(() => {
+                        langBadge.classList.remove('flex');
+                        langBadge.classList.add('hidden');
+                    }, 8000);
+                }
+            }
+
+        } catch (e) {
+            removeThinking(thinkingId);
+            appendMessage('assistant', "I apologize, but I'm unable to reach the StadiumMind core API. Please ensure the FastAPI backend is running locally on port 8000.");
+        }
+    }
+
+    // Bind Chat Send elements
+    if (chatSendBtn && chatInput) {
+        chatSendBtn.addEventListener('click', () => handleChatMessage(chatInput.value));
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleChatMessage(chatInput.value);
+        });
+    }
+
+    // Bind Chat Preset Suggestion Chips (via data-chat-chip attribute)
+    document.querySelectorAll('[data-chat-chip]').forEach(chip => {
+        chip.addEventListener('click', function() {
+            handleChatMessage(this.getAttribute('data-chat-chip'));
+        });
+    });
+
+    // Close button (×) — clears chat history
+    const chatCloseBtn = document.getElementById('chat-close-btn');
+    if (chatCloseBtn) {
+        chatCloseBtn.addEventListener('click', () => {
+            if (chatContainer) {
+                // Keep only the first welcome message
+                const msgs = chatContainer.querySelectorAll('div.flex.gap-3');
+                msgs.forEach((m, i) => { if (i > 0) m.remove(); });
+            }
+            chatHistory = [];
+        });
+    }
+
+    // Bind Multilingual Demo Chips
+    document.querySelectorAll('.lang-chip').forEach(chip => {
+        chip.addEventListener('click', function() {
+            const msg = this.getAttribute('data-msg');
+            if (msg && chatInput) {
+                chatInput.value = msg;
+                handleChatMessage(msg);
+            }
+        });
+    });
+
+    // 6. Quick Operations Button Bindings
+    const quickOpsHeader = Array.from(document.querySelectorAll('h2')).find(h2 => h2.textContent.includes('Quick Operations'));
+    const quickOpsButtons = quickOpsHeader ? quickOpsHeader.nextElementSibling.querySelectorAll('button') : [];
+    
+    // Direct lookup by label
+    const opsMap = {};
+    quickOpsButtons.forEach(btn => {
+        const span = btn.querySelector('.text-xs, span:not(.material-symbols-outlined)');
+        if (span) {
+            const label = span.textContent.trim();
+            opsMap[label] = btn;
+        }
+    });
+
+    // 6a. Find My Seat
+    if (opsMap["Find My Seat"]) {
+        opsMap["Find My Seat"].addEventListener('click', async () => {
+            const ticket = prompt("Please enter your Ticket details (e.g., 'Section 224, Row C, Seat 4'):", "Section 109, Row F");
+            if (!ticket) return;
+
+            // Ask whether accessible route is needed
+            const accessibleNeeded = confirm("Do you require an accessible route? (wheelchair/mobility aid)\n\nClick OK for Yes, Cancel for No.");
+
+            appendMessage('user', `🧭 Find My Seat: ${ticket}${accessibleNeeded ? ' (Accessible Route Requested)' : ''}`);
+            scrollToChat();
+            const thinkingId = appendThinking();
+
+            try {
+                const res = await fetch(`${API_BASE}/operations/find-seat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ticket: ticket, accessible_requested: accessibleNeeded })
+                });
+                removeThinking(thinkingId);
+                const data = await res.json();
+
+                let text = `💺 **Seat Location Found**\n\n`;
+                text += `* **Location**: ${data.location}\n`;
+                text += `* **Gate**: ${data.gate}\n`;
+                if (data.walking_time) {
+                    text += `* **⏱️ Estimated Walking Time**: ${data.walking_time}\n`;
+                }
+                if (data.accessible_route) {
+                    text += `* **♿ Accessible Route**: ${data.accessible_route}\n`;
+                }
+                text += `\n**Step-by-Step Directions**:\n${data.directions}`;
+
+                appendMessage('assistant', text);
+            } catch (e) {
+                removeThinking(thinkingId);
+                appendMessage('assistant', `❌ Failed to connect to backend for seat routing. Standard lower level sections are accessed via Gate A or C.`);
+            }
+        });
+    }
+
+    // 6b. Food Recs
+    if (opsMap["Food Recs"]) {
+        opsMap["Food Recs"].addEventListener('click', async () => {
+            const pref = prompt("Enter food cravings or dietary preference (e.g. 'vegan', 'gluten-free', 'tacos'):", "vegan");
+            if (!pref) return;
+
+            appendMessage('user', `Food Recommendations: ${pref}`);
+            scrollToChat();
+            const thinkingId = appendThinking();
+
+            try {
+                const res = await fetch(`${API_BASE}/operations/food-recs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ preference: pref })
+                });
+                removeThinking(thinkingId);
+                const data = await res.json();
+
+                let text = `🍔 **Concessions Matching "${pref}"**:\n\n`;
+                data.recommendations.forEach(rec => {
+                    text += `* **${rec.name}** (${rec.location})\n  _${rec.description}_\n  *Highlights: ${rec.menu_highlights.join(', ')}*\n\n`;
+                });
+                appendMessage('assistant', text);
+            } catch (e) {
+                removeThinking(thinkingId);
+                appendMessage('assistant', `❌ Concession search failed. Food courts are located at Level 2 South.`);
+            }
+        });
+    }
+
+    // 6c. Washroom Status
+    if (opsMap["Washroom"]) {
+        opsMap["Washroom"].addEventListener('click', async () => {
+            appendMessage('user', `Check Restroom queue statuses`);
+            scrollToChat();
+            const thinkingId = appendThinking();
+            try {
+                const res = await fetch(`${API_BASE}/operations/washroom`);
+                removeThinking(thinkingId);
+                const data = await res.json();
+                const text = `🚽 **Restroom Capacity Status**:\n\n* **Occupancy**: ${data.universal}\n* **Estimated Wait**: ${data.queue_time}\n* **Status**: ${data.status}\n\nRestrooms are fully accessible and located near all major elevator hubs. North Stand facilities are currently less crowded.`;
+                appendMessage('assistant', text);
+            } catch (e) {
+                removeThinking(thinkingId);
+                appendMessage('assistant', `❌ Restroom status offline.`);
+            }
+        });
+    }
+
+    // 6d. Emergency Dispatch
+    if (opsMap["Emergency"]) {
+        opsMap["Emergency"].addEventListener('click', async () => {
+            const issue = prompt("Enter critical emergency details (e.g. 'chest pain', 'spilled liquid'):");
+            if (!issue) return;
+            const location = prompt("Enter exact location section or gate:", "Section 109");
+            if (!location) return;
+
+            appendMessage('user', `🚨 REPORT EMERGENCY: ${issue} at ${location}`);
+            scrollToChat();
+            const thinkingId = appendThinking();
+
+            try {
+                const res = await fetch(`${API_BASE}/operations/emergency`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ issue: issue, location: location })
+                });
+                removeThinking(thinkingId);
+                const data = await res.json();
+                
+                const text = `⚠️ **CRITICAL DISPATCH INITIATED**\n\n* **Status**: ${data.status}\n* **Message**: ${data.message}\n* **Dispatched**: ${data.dispatch_unit}\n* **Time**: ${data.timestamp}\n\nMedical and security teams have been dispatched. Please stay calm.`;
+                appendMessage('assistant', text);
+
+                // Refresh incidents lists immediately
+                fetchIncidents();
+            } catch (e) {
+                removeThinking(thinkingId);
+                appendMessage('assistant', `❌ Dispatch system offline. Please call *911 or alert nearest security steward.`);
+            }
+        });
+    }
+
+    // 6e. Transport
+    if (opsMap["Transport"]) {
+        opsMap["Transport"].addEventListener('click', async () => {
+            appendMessage('user', `Check transport schedules`);
+            scrollToChat();
+            const thinkingId = appendThinking();
+            try {
+                const res = await fetch(`${API_BASE}/operations/transport`);
+                removeThinking(thinkingId);
+                const data = await res.json();
+
+                let text = `🚌 **Transit & Shuttle Schedules**:\n\n`;
+                data.transport_items.forEach(t => {
+                    text += `* **${t.name}**: ${t.eta} (${t.status})\n`;
+                });
+                appendMessage('assistant', text);
+            } catch (e) {
+                removeThinking(thinkingId);
+                appendMessage('assistant', `❌ Transit schedules offline.`);
+            }
+        });
+    }
+
+    // 6f. Accessibility
+    if (opsMap["Accessibility"]) {
+        opsMap["Accessibility"].addEventListener('click', async () => {
+            appendMessage('user', `Get accessibility and wheelchair route info`);
+            scrollToChat();
+            const text = `♿ **Stadium Accessibility Services**:\n\n* **Seating Zones**: Dedicated platforms are located in Sections 109, 117, 124, 135 (Lower Level) and 201, 207A, 220A (Mezzanine Level).\n* **Elevators**: Available at Gate A (Section 101), Gate B (Section 117), Gate C (Section 128), and Gate D (Section 144).\n* **Sensory Relief**: The sensory room is located near Section 109 for families and guests.\n* **Ramps**: High-radius pedestrian ramps are situated at the North and South corners of the stadium.`;
+            appendMessage('assistant', text);
+        });
+    }
+
+    // 6g. Generate AI Report
+    const reportBtn = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Generate AI Report'));
+    if (reportBtn) {
+        reportBtn.addEventListener('click', async () => {
+            appendMessage('user', `Generate operations report`);
+            scrollToChat();
+            const thinkingId = appendThinking();
+
+            try {
+                const res = await fetch(`${API_BASE}/operations/generate-report`, { method: 'POST' });
+                removeThinking(thinkingId);
+                const data = await res.json();
+                
+                appendMessage('assistant', data.report_md);
+            } catch (e) {
+                removeThinking(thinkingId);
+                appendMessage('assistant', `❌ Failed to generate report. Server connection refused.`);
+            }
+        });
+    }
+
+    // 7. Accessibility Hub persistence
+    const accessHeader = Array.from(document.querySelectorAll('h2')).find(h2 => h2.textContent.includes('Accessibility Toggle'));
+    const accessCheckboxes = accessHeader ? accessHeader.parentElement.querySelectorAll('input[type="checkbox"]') : [];
+    const wheelchairCheckbox = accessCheckboxes[0];
+    const lowVisionCheckbox = accessCheckboxes[1];
+
+    const voiceBtn = accessHeader ? Array.from(accessHeader.parentElement.querySelectorAll('button')).find(b => b.textContent.includes('Voice')) : null;
+    const textBtn = accessHeader ? Array.from(accessHeader.parentElement.querySelectorAll('button')).find(b => b.textContent.includes('Text')) : null;
+    
+    let voiceModeActive = false;
+    let largeTextActive = false;
+
+    async function syncAccessibility() {
+        const payload = {
+            wheelchair_mode: wheelchairCheckbox ? wheelchairCheckbox.checked : false,
+            low_vision_mode: lowVisionCheckbox ? lowVisionCheckbox.checked : false,
+            voice_mode: voiceModeActive,
+            large_text: largeTextActive
+        };
+
+        // Visual adaptations
+        if (payload.low_vision_mode) {
+            document.body.style.filter = "contrast(1.25) saturate(1.1)";
+        } else {
+            document.body.style.filter = "none";
+        }
+
+        if (payload.large_text) {
+            document.documentElement.classList.add('text-lg');
+            document.documentElement.style.fontSize = "18px";
+        } else {
+            document.documentElement.classList.remove('text-lg');
+            document.documentElement.style.fontSize = "16px";
+        }
+
+        try {
+            await fetch(`${API_BASE}/accessibility/toggle`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        } catch (e) {
+            console.warn("Accessibility API syncing unavailable.");
+        }
+    }
+
+    if (wheelchairCheckbox) wheelchairCheckbox.addEventListener('change', syncAccessibility);
+    if (lowVisionCheckbox) lowVisionCheckbox.addEventListener('change', syncAccessibility);
+    if (voiceBtn) {
+        voiceBtn.addEventListener('click', () => {
+            voiceModeActive = !voiceModeActive;
+            voiceBtn.className = voiceModeActive 
+                ? "flex-1 bg-primary text-on-primary py-2 rounded-lg text-xs font-bold border border-primary transition-colors"
+                : "flex-1 bg-white/5 py-2 rounded-lg text-xs hover:bg-white/10 border border-white/10 transition-colors";
+            syncAccessibility();
+        });
+    }
+    if (textBtn) {
+        textBtn.addEventListener('click', () => {
+            largeTextActive = !largeTextActive;
+            textBtn.className = largeTextActive
+                ? "flex-1 bg-primary text-on-primary py-2 rounded-lg text-xs font-bold border border-primary transition-colors"
+                : "flex-1 bg-white/5 py-2 rounded-lg text-xs hover:bg-white/10 border border-white/10 transition-colors";
+            syncAccessibility();
+        });
+    }
+
+    // 8. Sidebar AI ASSISTANT button — scroll to chat panel
+    const aiNavBtn = document.getElementById('sidebar-ai-btn');
+    if (aiNavBtn) {
+        aiNavBtn.addEventListener('click', () => {
+            scrollToChat();
+            if (chatInput) {
+                chatInput.style.transition = 'border-color 0.3s, box-shadow 0.3s';
+                chatInput.style.borderColor = '#b2c5ff';
+                chatInput.style.boxShadow = '0 0 0 2px rgba(178,197,255,0.2)';
+                setTimeout(() => { chatInput.style.borderColor = ''; chatInput.style.boxShadow = ''; }, 2000);
+            }
+        });
+    }
+
+    // 8h. Top Nav links (Stadium Live, Logistics, Broadcasting)
+    const topNavLive = document.getElementById('topnav-live');
+    const topNavLogistics = document.getElementById('topnav-logistics');
+    const topNavBroadcasting = document.getElementById('topnav-broadcasting');
+    const allTopNavLinks = [topNavLive, topNavLogistics, topNavBroadcasting];
+
+    function setActiveTopNav(el) {
+        allTopNavLinks.forEach(a => {
+            if (!a) return;
+            a.className = "text-on-surface-variant font-medium hover:bg-white/10 transition-colors px-2";
+        });
+        if (el) el.className = "text-primary font-bold border-b-2 border-primary hover:bg-white/10 transition-colors px-2";
+    }
+
+    if (topNavLive) {
+        topNavLive.addEventListener('click', (e) => {
+            e.preventDefault();
+            setActiveTopNav(topNavLive);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    if (topNavLogistics) {
+        topNavLogistics.addEventListener('click', (e) => {
+            e.preventDefault();
+            setActiveTopNav(topNavLogistics);
+            const gateHeader = Array.from(document.querySelectorAll('h2')).find(h => h.textContent.includes('AI Operations & Crowd'));
+            if (gateHeader) gateHeader.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            else window.scrollBy({ top: 400, behavior: 'smooth' });
+        });
+    }
+
+    if (topNavBroadcasting) {
+        topNavBroadcasting.addEventListener('click', (e) => {
+            e.preventDefault();
+            setActiveTopNav(topNavBroadcasting);
+            const analyticsHeader = Array.from(document.querySelectorAll('h2')).find(h => h.textContent.includes('Advanced Analytics'));
+            if (analyticsHeader) analyticsHeader.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    }
+
+    // 8b. Fetch & Render AI Recommendations
+    async function updateAiRecommendations() {
+        try {
+            const res = await fetch(`${API_BASE}/crowd/recommendations`);
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            
+            const container = document.getElementById('ai-recs-container');
+            if (container && data.recommendations) {
+                container.innerHTML = data.recommendations.map(rec => {
+                    let badgeColor = "bg-primary/20 text-primary border-primary/20";
+                    let borderHighlight = "border-white/10 bg-white/5 hover:bg-white/10";
+                    if (rec.priority === 'high') {
+                        badgeColor = "bg-error/20 text-error border-error/20";
+                        borderHighlight = "border-error/30 bg-error/5 hover:bg-error/10";
+                    } else if (rec.priority === 'medium') {
+                        badgeColor = "bg-warning/20 text-warning border-warning/20";
+                        borderHighlight = "border-warning/30 bg-warning/5 hover:bg-warning/10";
+                    }
+
+                    let icon = "info";
+                    if (rec.category.toLowerCase().includes("gate")) icon = "directions_bus";
+                    else if (rec.category.toLowerCase().includes("volunteer")) icon = "diversity_3";
+                    else if (rec.category.toLowerCase().includes("crowd") || rec.category.toLowerCase().includes("security")) icon = "security";
+
+                    return `
+                        <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between border ${borderHighlight} transition-all duration-300">
+                            <div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-sm opacity-70">${icon}</span>
+                                        <span class="text-[10px] text-label-caps opacity-70">${rec.category}</span>
+                                    </div>
+                                    <span class="text-[10px] uppercase font-bold border px-2 py-0.5 rounded-full ${badgeColor}">${rec.priority}</span>
+                                </div>
+                                <h3 class="text-body-md font-bold text-white mb-2">${rec.title}</h3>
+                                <p class="text-xs text-on-surface-variant leading-relaxed mb-4">${rec.description}</p>
+                            </div>
+                            <button class="w-full bg-primary/10 hover:bg-primary hover:text-on-primary text-primary text-xs font-bold py-2 px-4 rounded-xl border border-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2" onclick="executeRecommendation('${rec.title.replace(/'/g, "\\'")}', '${rec.description.replace(/'/g, "\\'")}')">
+                                <span class="material-symbols-outlined text-xs">bolt</span>
+                                <span>${rec.action_text}</span>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } catch (e) {
+            console.warn("Recommendations API unavailable.");
+        }
+    }
+
+    window.executeRecommendation = function(title, description) {
+        appendMessage('user', `Implement Recommendation: ${title}`);
+        scrollToChat();
+        const thinkingId = appendThinking();
+        setTimeout(() => {
+            removeThinking(thinkingId);
+            appendMessage('assistant', `✅ **Mitigation Strategy Activated**:\n\n* **Action**: ${title}\n* **Details**: ${description}\n\nAll volunteer coordinates and PA speaker zones have been updated. Flow indicators will show response updates shortly.`);
+        }, 1200);
+    };
+
+    // 8c. Side Nav Smooth Scrolling & Navigation
+    const navLinks = document.querySelectorAll('aside nav a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            navLinks.forEach(l => {
+                l.className = "text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-white/5 hover:text-primary transition-all duration-300";
+            });
+            link.className = "bg-primary/20 text-primary border-r-4 border-primary px-4 py-3 flex items-center gap-3 transition-all duration-300";
+
+            const textSpan = link.querySelector('span.font-body-md');
+            if (textSpan) {
+                const text = textSpan.textContent.trim();
+                if (text === "Home") {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else if (text === "Stadium Map") {
+                    const mapHeader = Array.from(document.querySelectorAll('span')).find(s => s.textContent.includes("Crowd Density Heatmap"));
+                    if (mapHeader) mapHeader.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else if (text === "Crowd Analytics") {
+                    const crowdHeader = Array.from(document.querySelectorAll('h2')).find(h => h.textContent.includes("AI Operations & Crowd"));
+                    if (crowdHeader) crowdHeader.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else if (text === "Security") {
+                    const incidentsHeader = Array.from(document.querySelectorAll('h3')).find(h => h.textContent.includes("Security Incidents"));
+                    if (incidentsHeader) incidentsHeader.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else if (text === "Settings") {
+                    const accessHeader = Array.from(document.querySelectorAll('h2')).find(h => h.textContent.includes("Accessibility Toggle"));
+                    if (accessHeader) accessHeader.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+    });
+
+    // 8d. Advanced Analytics - Export CSV
+    const exportBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Export CSV'));
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            const csvContent = "data:text/csv;charset=utf-8,"
+                + "Facility/Gate,Location/Zone,Percentage/Status\n"
+                + "Gate A,North Concourse,72%\n"
+                + "Gate B,HEAVY TRAFFIC (South Concourse),94%\n"
+                + "Food Court,Level 2 South,45%\n"
+                + "Parking,Main Lot,88%\n"
+                + "Medical,Zone 4 Station,2 min wait\n"
+                + "Washroom,Universal,Normal\n";
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "stadium_metrics.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            appendMessage('assistant', "📊 **Export Complete**: The current stadium metrics have been compiled and downloaded as `stadium_metrics.csv`.");
+        });
+    }
+
+    // 8e. Advanced Analytics - Real-time Feed manual refresh
+    const feedBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Real-time Feed'));
+    if (feedBtn) {
+        feedBtn.addEventListener('click', () => {
+            runPolling();
+            appendMessage('assistant', "🟢 **Real-time Feed Synchronized**: Manually triggered a sensor refresh. All gate capacities, entry rates, and active incidents are updated.");
+        });
+    }
+
+    // 8f. Language Selector dropdown click listener
+    const langSelector = document.querySelector('header div.hidden.lg\\:flex');
+    if (langSelector) {
+        langSelector.style.cursor = "pointer";
+        langSelector.addEventListener('click', () => {
+            const requestedLang = prompt("Select display language (e.g. Spanish, French, Portuguese, Arabic, English):", "Spanish");
+            if (!requestedLang) return;
+            
+            const textSpan = langSelector.querySelector('span.font-label-caps');
+            if (textSpan) textSpan.textContent = `Language: ${requestedLang.substring(0,2).toUpperCase()}`;
+            
+            appendMessage('assistant', `🌐 **Language Switch**: Preferred assistant communication language updated to **${requestedLang}**.`);
+        });
+    }
+
+    // 8g. Sidebar - Help & Logout handlers
+    const helpLink = Array.from(document.querySelectorAll('aside a')).find(a => a.textContent.includes('Help'));
+    if (helpLink) {
+        helpLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            scrollToChat();
+            appendMessage('assistant', `❓ **StadiumMind AI Operations Guide**\n\nI am your real-time operations copilot for FIFA World Cup 2026. Here is what you can do:\n\n1. **AI Assistant Panel** (bottom right): Ask questions about rules, accessibility, parking, concessions in any language.\n2. **Quick Operations Panel**: Run instant workflows like searching tickets, calling dispatcher, or checking universal facilities.\n3. **Dynamic recommendations**: Click mitigation action buttons to balance stadium entry flow or resolve incident logs.\n4. **Operations report**: Click the 'Generate AI Report' button to run a live analysis of score, capacity, and security queues.`);
+        });
+    }
+
+    const logoutLink = Array.from(document.querySelectorAll('aside a')).find(a => a.textContent.includes('Logout'));
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm("Are you sure you want to end your StadiumMind session?")) {
+                alert("Session ended. Redirecting to login...");
+                window.location.reload();
+            }
+        });
+    }
+
+    // 9. Periodic Polling loops (Match score, gates capacity, entry charts, incidents list)
+    function runPolling() {
+        updateMatchHUD();
+        updateGatesCapacity();
+        updateEntryRateChart();
+        fetchIncidents();
+        updateAiRecommendations();
+    }
+
+    // Initial load
+    runPolling();
+
+    // Check updates every 5 seconds
+    setInterval(runPolling, 5000);
+
+</script>
+</body></html>

@@ -1,0 +1,15 @@
+{
+  "name": "stadiummind-ai-frontend",
+  "version": "1.0.0",
+  "description": "StadiumMind AI Frontend — FIFA World Cup 2026 Smart Stadium Hub",
+  "main": "code.html",
+  "scripts": {
+    "build": "npx tailwindcss -i ./input.css -o ./dist/output.css --minify",
+    "dev": "npm run build && python3 -m http.server 3000 --bind 127.0.0.1"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/container-queries": "^0.1.1"
+  }
+}
