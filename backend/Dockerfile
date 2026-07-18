@@ -25,30 +25,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # --- Install Python dependencies ---
+# All packages (including gunicorn) are declared in requirements.txt
 COPY requirements.txt .
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir gunicorn
+RUN pip install --upgrade pip --root-user-action=ignore && \
+    pip install --no-cache-dir --root-user-action=ignore -r requirements.txt
 
 # --- Copy application source ---
 COPY . .
 
-# --- Ensure data directory exists (ChromaDB will be built on first boot) ---
+# --- Ensure data & chroma directories exist ---
 RUN mkdir -p /app/data/chroma_db
 
-# Expose the port Render will route to
+# Expose the port (Render will override via $PORT env var)
 EXPOSE 8000
 
 # --- Health check ---
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
     CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
-# --- Production start command ---
-# Uses gunicorn with uvicorn workers for concurrent request handling
-# Render sets HOST=0.0.0.0 and PORT automatically via environment variables
+# --- Production start command (shell form so $PORT is expanded) ---
+# 1 worker is optimal for Render's free-tier memory limits.
+# Uses uvicorn worker class for ASGI (async) support.
 CMD gunicorn app.main:app \
     --worker-class uvicorn.workers.UvicornWorker \
-    --workers 2 \
+    --workers 1 \
     --bind 0.0.0.0:${PORT:-8000} \
     --timeout 120 \
     --keep-alive 5 \

@@ -5,11 +5,16 @@
 services:
   - type: web
     name: stadiumind-ai-backend
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
+    runtime: python
     region: oregon
-    plan: starter          # Upgrade to standard for persistent disk (ChromaDB)
+    plan: starter
+
+    # Run from the backend subfolder
+    rootDir: backend
+
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: gunicorn app.main:app --worker-class uvicorn.workers.UvicornWorker --workers 1 --bind 0.0.0.0:$PORT --timeout 120 --log-level info
+
     healthCheckPath: /health
 
     envVars:
@@ -20,6 +25,9 @@ services:
         value: 0.0.0.0
 
       - key: CORS_ORIGINS
-        value: "*"         # Replace with your Vercel URL after first deploy e.g. https://stadium-mind.vercel.app
+        value: "*"         # Replace with your Vercel URL after first deploy
+
+      - key: PYTHON_VERSION
+        value: "3.11.9"
 
     autoDeploy: true       # Auto re-deploy on every git push to main branch

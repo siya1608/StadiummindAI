@@ -10,8 +10,14 @@ import logging
 import json
 from typing import List, Dict, Any, Optional
 
-from google import genai
-from google.genai import types
+try:
+    from google import genai
+    from google.genai import types
+    _GENAI_AVAILABLE = True
+except ImportError:
+    genai = None
+    types = None
+    _GENAI_AVAILABLE = False
 from pydantic import BaseModel
 
 from app.config import settings
@@ -46,6 +52,12 @@ class GeminiService:
 
     def initialize_llm(self) -> bool:
         """Initializes the official Google GenAI Client using the API Key."""
+        if not _GENAI_AVAILABLE:
+            logger.error(
+                "google-genai package is not installed. "
+                "Add 'google-genai>=0.5.0' to requirements.txt and redeploy."
+            )
+            return False
         if not settings.GEMINI_API_KEY:
             logger.warning(
                 "GEMINI_API_KEY is not configured in settings. Running in mock/offline mode."

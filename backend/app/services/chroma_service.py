@@ -145,7 +145,7 @@ class ChromaService:
             logger.warning("Retriever not initialized. Cannot retrieve context.")
             return ""
         try:
-            docs = self.retriever.get_relevant_documents(query)
+            docs = self.retriever.invoke(query)
             context_str = "\n\n".join([doc.page_content for doc in docs])
             return context_str
         except Exception as e:
