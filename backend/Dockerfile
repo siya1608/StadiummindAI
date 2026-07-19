@@ -36,5 +36,9 @@ COPY . .
 # Ensure data & chroma directories exist in all potential paths
 RUN mkdir -p /app/data/chroma_db /app/backend/data/chroma_db
 
-# Start FastAPI app using Uvicorn directly (Railway binds to $PORT)
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Expose default port
+EXPOSE 8000
+
+# Start FastAPI app using the production-optimized run.py script
+# This automatically reads $PORT from the environment (Railway/Render)
+CMD ["python3", "run.py"]
