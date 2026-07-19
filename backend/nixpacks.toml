@@ -1,0 +1,20 @@
+# ============================================================
+# nixpacks.toml — Nixpacks configuration for Railway
+# Forces Railway to build this exclusively as a Python service,
+# ignoring any Node.js auto-detection.
+# ============================================================
+
+[providers]
+# Explicitly enable only Python, disabling Node.js provider
+python = {}
+
+[phases.setup]
+nixPkgs = ["python311"]
+
+[phases.install]
+# Direct Python dependencies installation
+cmds = ["pip install --upgrade pip && pip install -r requirements.txt"]
+
+[start]
+# Launch FastAPI app via production-optimized startup script
+cmd = "python3 run.py"
