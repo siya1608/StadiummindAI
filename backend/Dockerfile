@@ -1,19 +1,20 @@
 # ============================================================
 # StadiumMind AI — Production Dockerfile
-# Target: Render (backend FastAPI service)
+# Targets: Railway / Render (backend FastAPI service)
+# Supports both root-repository and subfolder-backend build contexts
 # ============================================================
 
-# --- Base image ---
 FROM python:3.11-slim
 
-# Prevent Python from writing .pyc files and enable stdout/stderr streaming
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set working directory inside container
+# Configure python path to find 'app' folder regardless of whether build context
+# was the repository root (copies backend/app) or the backend folder directly (copies app)
+ENV PYTHONPATH=/app:/app/backend
+
 WORKDIR /app
 
-# Install system dependencies required by ChromaDB (SQLite) and google-genai
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
@@ -24,34 +25,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# --- Install Python dependencies ---
-# All packages (including gunicorn) are declared in requirements.txt
-COPY requirements.txt .
+# Copy requirements.txt flexibly depending on build context
+COPY requirements.txt* backend/requirements.txt* ./
 RUN pip install --upgrade pip --root-user-action=ignore && \
     pip install --no-cache-dir --root-user-action=ignore -r requirements.txt
 
-# --- Copy application source ---
+# Copy all files
 COPY . .
 
-# --- Ensure data & chroma directories exist ---
-RUN mkdir -p /app/data/chroma_db
+# Ensure data & chroma directories exist in all potential paths
+RUN mkdir -p /app/data/chroma_db /app/backend/data/chroma_db
 
-# Expose the port (Render will override via $PORT env var)
-EXPOSE 8000
-
-# --- Health check ---
-HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
-
-# --- Production start command (shell form so $PORT is expanded) ---
-# 1 worker is optimal for Render's free-tier memory limits.
-# Uses uvicorn worker class for ASGI (async) support.
-CMD gunicorn app.main:app \
-    --worker-class uvicorn.workers.UvicornWorker \
-    --workers 1 \
-    --bind 0.0.0.0:${PORT:-8000} \
-    --timeout 120 \
-    --keep-alive 5 \
-    --log-level info \
-    --access-logfile - \
-    --error-logfile -
+# Start FastAPI app using Uvicorn directly (Railway binds to $PORT)
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
