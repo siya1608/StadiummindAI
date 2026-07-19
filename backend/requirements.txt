@@ -20,6 +20,7 @@ langchain-core>=0.1.46
 
 # Vector database
 chromadb>=0.4.24
+langchain-chroma>=0.1.0
 
 # Google AI
 google-genai>=0.5.0

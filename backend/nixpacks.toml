@@ -4,9 +4,7 @@
 # ignoring any Node.js auto-detection.
 # ============================================================
 
-[providers]
-# Explicitly enable only Python, disabling Node.js provider
-python = {}
+providers = ["python"]
 
 [phases.setup]
 nixPkgs = ["python311"]
@@ -18,3 +16,4 @@ cmds = ["pip install --upgrade pip && pip install -r requirements.txt"]
 [start]
 # Launch FastAPI app via production-optimized startup script
 cmd = "python3 run.py"
+
