@@ -367,7 +367,7 @@ class RAGService:
                 max_output_tokens=1024,
             )
             response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-2.0-flash",
                 contents=contents,
                 config=config,
             )
@@ -421,7 +421,7 @@ class RAGService:
             "data_directory": str(self._data_dir),
             "loaded_documents": data_files,
             "embeddings_model": "gemini-embedding-2",
-            "llm_model": "gemini-2.5-flash",
+            "llm_model": "gemini-2.0-flash",
         }
 
 

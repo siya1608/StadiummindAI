@@ -122,7 +122,7 @@ class GeminiService:
                 name: str   # Full English name, e.g. "Spanish", "French", "Arabic"
 
             response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-2.0-flash",
                 contents=f"Detect the language of this text and return ONLY a JSON object with 'code' (ISO 639-1) and 'name' (full English name).\n\nText: {text[:300]}",
                 config=types.GenerateContentConfig(
                     response_mime_type="application/json",
@@ -168,7 +168,7 @@ Output only the final report content — no preamble.
 {MULTILINGUAL_INSTRUCTION}"""
         try:
             response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-2.0-flash",
                 contents=prompt,
             )
             return response.text
@@ -234,7 +234,7 @@ Respond ONLY with a structured JSON object matching the required schema.
                 temperature=0.1,
             )
             response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-2.0-flash",
                 contents=prompt,
                 config=config,
             )
@@ -313,7 +313,7 @@ Respond ONLY with a structured JSON object matching the required schema.
                 temperature=0.2,
             )
             response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-2.0-flash",
                 contents=prompt,
                 config=config,
             )
